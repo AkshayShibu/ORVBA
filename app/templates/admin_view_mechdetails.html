@@ -1,0 +1,171 @@
+{% extends 'admin_home.html' %}
+{% block dashboard %}
+{% load static %}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<style>
+ 
+    .dashboard-title {
+        color: white;
+        text-align: center;
+        margin: 30px 0;
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        animation: fadeIn 0.8s ease-in-out;
+    }
+
+    .containers {
+        max-width: 1400px;
+        padding: 30px;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(10px);
+        animation: slideUp 0.8s ease-out;
+    }
+
+    .history-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 25px;
+        padding: 20px;
+    }
+
+    .history-item {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .history-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(to bottom, #667eea, #764ba2);
+    }
+
+    .history-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .history-item h5 {
+        color: #2d3748;
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .info-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        color: #4a5568;
+    }
+
+    .info-row i {
+        width: 24px;
+        margin-right: 10px;
+        color: #667eea;
+    }
+
+    .info-row strong {
+        min-width: 100px;
+        color: #2d3748;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        background: #ebf4ff;
+        color: #4c51bf;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .containers {
+            padding: 15px;
+        }
+        
+        .history-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .history-item {
+            padding: 20px;
+        }
+    }
+</style>
+
+<h2 class="dashboard-title">Service History</h2>
+<div class="containers">
+    <div class="history-grid">
+        {% for history in history %}
+        <div class="history-item">
+            <h5>
+                <i class="fas fa-wrench"></i>
+                Mechanic: {{ history.mechanic.name }}
+            </h5>
+            <div class="info-row">
+                <i class="fas fa-user"></i>
+                <strong>Customer:</strong>
+                <span>{{ history.customer.name }}</span>
+            </div>
+            <div class="info-row">
+                <i class="fas fa-clipboard-list"></i>
+                <strong>Request:</strong>
+                <span>{{ history.req.discription }}</span>
+            </div>
+            <div class="info-row">
+                <i class="fas fa-money-bill-wave"></i>
+                <strong>Payment:</strong>
+                <span>${{ history.payment }}</span>
+            </div>
+            <div class="info-row">
+                <i class="fas fa-money-bill-wave"></i>
+                <strong>Fee:</strong>
+                <span>${{ history.platform_fee }}</span>
+            </div>
+            <div class="info-row">
+                <i class="fas fa-info-circle"></i>
+                <strong>Status:</strong>
+                <span class="status-badge">{{ history.status }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

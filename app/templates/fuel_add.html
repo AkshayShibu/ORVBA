@@ -1,0 +1,106 @@
+{% extends 'fuel_home.html' %}
+{% block fuel %}
+{% load static %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<style>
+    body{
+        background: rgb(241, 239, 240);
+        background: radial-gradient(circle, rgb(248, 247, 247) 0%, rgb(76, 76, 77) 100%);
+    }
+</style>
+<div class="container mt-5">
+    <div class="form-control border-0 p-4 bg-white bg-opacity-50" action="" style="height:fit-content;">
+        <div class="text-center my-3">
+            <span class="h1 fw-bold">
+                {% if fuel_id %} Edit Fuel {% else %} Add Fuel {% endif %}
+            </span>
+        </div>
+        <form action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.errors }}
+            <div class="row mt-5">
+                <div class="col">
+                    <div class="text-center mb-4">
+                        <img src="{% static 'images/hello.jpg' %}" alt="Avatar" class="avatar" height="105px">
+                        <input type="file" name="logo" accept="image/*" class="form-control mt-3" {% if form.instance.logo %} value="{{ form.instance.logo.url }}" {% endif %}>
+                    </div>
+                    <div class="mb-3">
+                        <label for="" class="form-label">Location :</label>
+                        <select name="location" id="">
+                            {% for loc in location %} 
+                               <option value="{{loc.id}}">{{loc.name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="mb-3">
+                        <label for="" class="form-label">Dealer:</label>
+                        <input type="text" name="fuel_dealer" class="form-control" id="name" placeholder="Fuel Dealer Name" value="{{ form.fuel_dealer.value|default:'' }}"> 
+                    </div>
+                    <div class="mb-3">
+                        <label for="" class="form-label">Price :</label>
+                        <input type="number" name="price" class="form-control" id="dob" placeholder="Price" value="{{ form.price.value|default:'' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="" class="form-label">Fuel Type :</label>
+                        <select name="fuel_type" id="" class="form-control">
+                            <option value="Petrol" {% if form.fuel_type.value == 'Petrol' %} selected {% endif %}>Petrol</option>
+                            <option value="Diesel" {% if form.fuel_type.value == 'Diesel' %} selected {% endif %}>Diesel</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center">                                  
+                <button type="submit" class="btn btn-dark">{% if fuel_id %} Save Changes {% else %} Add Fuel {% endif %}</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Display Added Fuels -->
+    <div class="container mt-5">
+        <h3 class="text-center mb-4">Added Fuels</h3>
+        <div class="row">
+            {% for fuel in fuels %}
+                <div class="col-md-4">
+                    <div class="card mb-3">
+                        <a href="{% url 'fuel_list' fuel.id %}" style="text-decoration: none;">
+                        <img src="{{ fuel.logo.url }}" class="card-img-top" alt="Fuel Image" height="200px">
+                        <div class="card-body">
+                            <h5 class="card-title">Fuel Type: {{ fuel.fuel_type }}</h5>
+                            <p class="card-text">Dealer: {{ fuel.fuel_dealer }}</p>
+                            <p class="card-text">Quantity: {{ fuel.quantity }} L</p>
+                            <p class="card-text">Price: ${{ fuel.price }}</p>
+                            <!-- Edit and Delete Buttons -->
+                            <div class="d-flex justify-content-between">
+                                <a href="{% url 'edit_fuel' fuel.id %}" class="btn btn-warning">Edit</a>
+                                <form action="{% url 'fuel_del' fuel.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    </a>
+                    </div>
+                </div>
+            {% empty %}
+                <p>No fuels added yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            {% if messages %}
+                {% for message in messages %}
+                    alert({{ message }});
+                {% endfor %}
+            {% endif %}
+        });
+    </script>
+{% endblock %}

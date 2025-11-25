@@ -1,0 +1,32 @@
+{% extends 'user_home.html' %}
+
+{% block user %}
+<!-- <h1> Fuels</h1> -->
+<div class="row" style="padding:20px;">
+    {% for fuel in fuels %}
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <img src="{{ fuel.logo.url }}" class="card-img-top" alt="Fuel Image">
+            <div class="card-body">
+                <h5 class="card-title">{{ fuel.fuel_type }}</h5>
+                <p class="card-text">Dealer: {{ fuel.fuel_dealer }}</p>
+                <p class="card-text">Price: ${{ fuel.price }}</p>
+                <p class="card-text">Location: {{ fuel.location.name }}</p>
+               
+            </div>
+            <div class="row mb-3">
+                <div class="col"></div>
+      <div class="col"> 
+        </div>
+     <div class="col">
+        <form action="{% url 'req_fuel' fuel.id %}"   >
+            {% csrf_token %}
+            <button  type="submit" class="  text-white" style="background-color:rgb(67, 87, 96);border-radius:0.5rem;border:none;padding:5px 20px;"> Request</button>
+        </form>
+     </div>
+    </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

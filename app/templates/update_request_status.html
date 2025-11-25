@@ -1,0 +1,15 @@
+{% extends 'user_home.html' %}
+
+{% block user %}
+<h1>Update Request Status</h1>
+<form method="POST">
+    {% csrf_token %}
+    <label for="status">Select Status:</label>
+    <select name="status">
+        <option value="Processing" {% if fuel_request.status == 'Processing' %}selected{% endif %}>Processing</option>
+        <option value="Completed" {% if fuel_request.status == 'Completed' %}selected{% endif %}>Completed</option>
+        <option value="Cancelled" {% if fuel_request.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+    </select>
+    <button type="submit">Update Status</button>
+</form>
+{% endblock %}

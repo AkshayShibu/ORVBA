@@ -1,0 +1,141 @@
+{% extends 'mechanic_home.html' %}
+{% block mechanic %}
+{% load static %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<script src="{% static 'OlaMapsWebSDKNew/olamaps-web-sdk.umd.js' %}"></script>
+<style>
+    body {
+        background: radial-gradient(circle, rgb(248, 247, 247) 0%, rgb(76, 76, 77) 100%);
+    }
+    .card {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .card-title {
+        font-size: 1.25rem;
+    }
+    .btn {
+        padding: 0.5rem 1.5rem;
+    }
+    .map-container {
+        height: 300px;
+    }
+</style>
+<div class="container mt-5">
+    <div class="form-control border-0 p-5 bg-white bg-opacity-50 mb-3" style="height: fit-content;">
+        <h1 class="text-center">Requests Made By User</h1>
+        <div class="row mt-4" style="margin-left: 100px;">
+            {% for request in requests %}
+            
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-4">
+                                <img src="{{ request.user.profile_pic.url }}" class="rounded" alt="" height="100px" width="150">
+                            </div>
+                            <div class="col mt-4">
+                                <h5 class="card-title text-center" style="font-family: 'Times New Roman', serif; font-weight: bolder;float: left;">{{ request.user.name }}</h5>
+                                
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <p>{{ request.discription }}</p>
+                                <p>Phone: +91 {{ request.phone }}</p>
+                                <p>Location: {{ request.location }}</p>
+                                <div class="row mt-4">
+                                    {% if request.status == 'completed' and request.bill_set.exists %}
+                                        <p class="bg-success text-center text-light rounded p-2">Completed</p>
+                                    {% elif request.status == 'Payment Pending' %}
+                                        <p class="bg-warning text-center text-light rounded p-2">Payment Processing</p>
+                                    {% endif %}
+                                    <div class="col">
+                                        
+                                        {% if not request.bill_set.exists %}
+                                            {% if  request.status == "accepted" %}
+                                            <form action="{% url 'create_bill_payment_mech' request.id %}" method="post">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-block btn-info">Create Bill</button>
+                                            </form>
+                                            {% elif request.status == "rejected" %}
+                                            <p class="bg-danger text-center text-light rounded p-2">Rejected</p>
+
+                                            {% else %}
+                                            <div class="row">
+                                                <div class="col">
+                                                    <a class="btn btn-success" href="{% url 'req_accept' request.id %}">Accept</a>
+                                                </div>
+                                                <div class="col">
+                                                    <a class="btn btn-danger" href="{% url 'req_reject' request.id %}">Reject</a>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <a href="{{request.link}}">
+                                    <div class="map-container " id="map-{{ forloop.counter }}"></div></a>
+                                   
+                                    <script>
+                                        document.addEventListener("DOMContentLoaded", function () {
+                                            if (typeof OlaMaps === "undefined") {
+                                                console.error("Ola Maps SDK not loaded.");
+                                                return;
+                                            }
+                                            const olaMaps = new OlaMaps({ apiKey: "QbmHqKOlHMQTAeKvQIMk4urmtZBSY39Rf5X34TPE" });
+                                            const mapContainerId = "map-{{ forloop.counter }}";
+                                            const latitude = {{ request.latitude|default:0 }};
+                                            const longitude = {{ request.longtitude|default:0 }};
+                                            if (latitude && longitude) {
+                                                const map = olaMaps.init({
+                                                    style: "https://api.olamaps.io/tiles/vector/v1/styles/default-light-standard/style.json",
+                                                    container: mapContainerId,
+                                                    center: [longitude, latitude],
+                                                    zoom: 15,
+                                                    // Set up the map's zoom and center position to clearly view the marker.
+                                                });
+                                                // Add a marker for the request's location
+                                                const popup = olaMaps.addPopup({ offset: [0, -30], anchor: 'bottom' }).setHTML('<div>This is a simple Popup</div>')
+                    
+                                                olaMaps
+                                                .addMarker({
+                                                    offset: [0, 6],
+                                                    anchor: 'bottom',
+                                                    color: 'red',
+                                                    draggable: true,
+                                                })
+                                                .setLngLat([longitude,latitude])
+                                                .setPopup(popup)
+                                                .addTo(map)
+                                            } else {
+                                                document.getElementById(mapContainerId).innerHTML = "Location data not available.";
+                                            }
+                                        });
+                                    </script>
+                            </div>
+                        </div>
+                       
+                    </div>
+                </div>
+               
+
+                
+        
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        {% if messages %}
+        {% for message in messages %}
+        alert('{{ message }}');
+        {% endfor %}
+        {% endif %}
+    });
+</script>
+
+{% endblock %}

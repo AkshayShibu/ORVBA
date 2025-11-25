@@ -1,0 +1,88 @@
+{% extends 'user_home.html' %}
+{% block  user %}
+{% load static %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+<!-- Add Bootstrap JavaScript (optional, but required for certain features) -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <style>
+        body {
+            background-color: black;
+        }
+
+        .container {
+            margin-top: 25px;
+        }
+
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-12">
+                <div class="card">
+                    <div class="card-header bg-dark text-white text-center">
+                        <h2>ADD PROFILE</h2>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+
+                            <div class="text-center mb-3">
+                                <img src="{% static 'images/hello.jpg' %}" alt="Avatar" class="avatar">
+                                <input type="file" name="profile_pic" accept="image/*" class="form-control mt-3">
+                            </div>
+                            <div class="mb-3">
+                                <label for="" class="form-label">Name:</label>
+                                <input type="text" name="name" class="form-control" id=""> 
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="" class="form-label">Address:</label>
+                                <input type="text" name="address" class="form-control" id="">
+                            </div>
+                           <div class="row">
+                            <div class="col">
+                                <div class="mb-2">
+                                    <label for="" class="form-label">Phone:</label>
+                                    <input type="number" name="phone" class="form-control" id="exampleInputPhone" required pattern="^(?:\+91|91|0)?[789]\d{9}$">
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="mb-2">
+                                    <label for="" class="form-label">DOB:</label>
+                                    <input type="date" name="dob" class="form-control" id="">
+                                </div>
+                            </div>
+                           </div>
+
+                            
+
+                            
+
+                            <div class="text-center">                                
+                                <button type="submit" class="btn btn-dark">Add Profile
+
+                                <a href="{%url 'user_home'%}"></a></button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+{% endblock %}

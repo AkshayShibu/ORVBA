@@ -1,0 +1,457 @@
+{% extends 'user_home.html' %}
+{% load static %}
+{% block user %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+<script src="{% static 'OlaMapsWebSDKNew/olamaps-web-sdk.umd.js' %}"></script>
+
+<div class="container py-4">
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Requests</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_count }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-fuel-pump fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Pending</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ pending_count }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-hourglass-split fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Approved</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ approved_count }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Completed</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ completed_count }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-flag-fill fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters and Search -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center text-white" style="background-color:rgb(78, 75, 75);">
+            <h1 class="h3 mb-0">Your Fuel Requests</h1>
+            
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-8">
+                    <div class="btn-group me-2">
+                        <button type="button" class="btn btn-outline-secondary btn-sm filter-btn active" data-filter="all">All</button>
+                        <button type="button" class="btn btn-outline-warning btn-sm filter-btn" data-filter="pending">Pending</button>
+                        <button type="button" class="btn btn-outline-success btn-sm filter-btn" data-filter="Order Confirmed">Order Confirmed</button>
+                        <button type="button" class="btn btn-outline-info btn-sm filter-btn" data-filter="completed">Completed</button>
+                        <button type="button" class="btn btn-outline-danger btn-sm filter-btn" data-filter="Cancelled">Cancelled</button>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <input type="text" id="search-input" class="form-control form-control-sm" placeholder="Search...">
+                        <button class="btn btn-outline-secondary btn-sm" type="button" id="search-button">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {% if fuel_requests %}
+                <div class="table-responsive">
+                    <table class="table table-hover" id="fuel-requests-table">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Fuel Type</th>
+                                <th>Phone</th>
+                                <th>Location</th>
+                                <th>Status</th>
+                                <th>Datetime</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for req in fuel_requests %}
+                            <tr class="request-row" data-status="{{ req.status }}">
+                                <td>
+                                    <span class="d-flex align-items-center">
+                                        <i class="bi bi-fuel-pump me-2 text-primary"></i>
+                                        {{ req.fuel.fuel_type }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="tel:{{ req.phone }}" class="text-decoration-none">
+                                        <i class="bi bi-telephone me-1"></i>{{ req.phone }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{{req.link}}" class="location-link" data-bs-toggle="tooltip" title="Click to view on map" style="text-decoration:none;">
+                                        <i class="bi bi-geo-alt me-1"></i>{{req.fuel.location.name}}
+                                    </a>
+                                </td>
+                                <td>
+                                    {% if req.status == 'Pending' %}
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                    {% elif req.status == 'Approved' %}
+                                        <span class="badge bg-success">Approved</span>
+                                    {% elif req.status == 'Completed' %}
+                                        <span class="badge bg-info">Completed</span>
+                                    {% elif req.status == 'Cancelled' %}
+                                        <span class="badge bg-danger">Cancelled</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ req.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="d-flex align-items-center">
+                                        <i class="bi bi-calendar-event me-1"></i>
+                                        <div>
+                                            {{ req.datetime|date:"M d, Y" }}<br>
+                                            <small class="text-muted">{{ req.datetime|time:"g:i A" }}</small>
+                                        </div>
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        {% if req.status == 'Payment Pending' %}
+                                        <a href="{% url 'fuel_payment' req.id %}" class="btn btn-outline-info">
+                                            Pay
+                                        </a>
+                                        {% endif %}
+                                        {% if req.status == 'pending' %}
+                                        <a href="{% url 'cancel_request' req.id %}" class="btn btn-outline-danger" onclick="return confirm('Are you sure you want to cancel this request?')">
+                                            <i class="bi bi-x-circle"></i>
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                {% if page_obj.has_other_pages %}
+                <nav aria-label="Fuel request pagination" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+                
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-fuel-pump display-1 text-muted"></i>
+                    <h4 class="mt-3">No fuel requests yet</h4>
+                    <p class="text-muted">When you make fuel requests, they will appear here.</p>
+                    <a href="{% url 'create_request' %}" class="btn btn-primary mt-2">
+                        <i class="bi bi-plus-circle me-1"></i> Create New Request
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Request Detail Modal -->
+<div class="modal fade" id="requestDetailModal" tabindex="-1" aria-labelledby="requestDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="requestDetailModalLabel">Fuel Request Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-body" id="request-details-container">
+                                <!-- Request details will be loaded here via JavaScript -->
+                                <div class="placeholder-glow">
+                                    <p class="placeholder col-8"></p>
+                                    <p class="placeholder col-6"></p>
+                                    <p class="placeholder col-7"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body p-0">
+                                <div id="map-container" style="height: 300px; width: 100%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="timeline-container" class="mt-3">
+                    <h6 class="mb-3">Request Timeline</h6>
+                    <ul class="timeline">
+                        <!-- Timeline will be loaded here via JavaScript -->
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a id="cancel-request-btn" href="#" class="btn btn-danger d-none">Cancel Request</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .table th {
+        font-weight: 600;
+    }
+    .badge {
+        font-weight: 500;
+        padding: 0.5em 0.8em;
+    }
+    .border-left-primary {
+        border-left: 0.25rem solid #4e73df !important;
+    }
+    .border-left-success {
+        border-left: 0.25rem solid #1cc88a !important;
+    }
+    .border-left-warning {
+        border-left: 0.25rem solid #f6c23e !important;
+    }
+    .border-left-info {
+        border-left: 0.25rem solid #36b9cc !important;
+    }
+    /* Timeline styling */
+    .timeline {
+        border-left: 2px solid #ccc;
+        position: relative;
+        list-style: none;
+        padding-left: 20px;
+        margin-left: 10px;
+    }
+    .timeline li {
+        position: relative;
+        padding-bottom: 15px;
+    }
+    .timeline li:before {
+        content: '';
+        width: 12px;
+        height: 12px;
+        background: white;
+        border: 2px solid #ccc;
+        border-radius: 50%;
+        position: absolute;
+        left: -27px;
+        top: 5px;
+    }
+    .timeline li.active:before {
+        background: #28a745;
+        border-color: #28a745;
+    }
+    /* Hover effect for rows */
+    .request-row:hover {
+        background-color: rgba(0,0,0,0.05);
+        cursor: pointer;
+    }
+    /* Location link hover */
+    .location-link:hover {
+        color: #0056b3;
+        text-decoration: underline !important;
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+        
+        // Filter functionality
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const tableRows = document.querySelectorAll('.request-row');
+        
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Update active button
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                const filterValue = this.getAttribute('data-filter');
+                
+                tableRows.forEach(row => {
+                    if (filterValue === 'all' || row.getAttribute('data-status') === filterValue) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+        });
+        
+        // Search functionality
+        const searchInput = document.getElementById('search-input');
+        const searchButton = document.getElementById('search-button');
+        
+        function performSearch() {
+            const searchTerm = searchInput.value.toLowerCase();
+            
+            tableRows.forEach(row => {
+                const rowText = row.textContent.toLowerCase();
+                if (rowText.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+        
+        searchButton.addEventListener('click', performSearch);
+        searchInput.addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+        
+        // View details functionality - placeholder for API call
+        const viewButtons = document.querySelectorAll('.view-details');
+        viewButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const requestId = this.getAttribute('data-id');
+                // Here you would typically fetch request details via AJAX
+                const detailsContainer = document.getElementById('request-details-container');
+                
+                // For demonstration purposes, we'll just show some placeholder content
+                detailsContainer.innerHTML = `
+                    <h6 class="mb-3">Request #${requestId}</h6>
+                    <p><strong>Status:</strong> <span class="badge bg-warning text-dark">Pending</span></p>
+                    <p><strong>Fuel Type:</strong> Petrol</p>
+                    <p><strong>Amount:</strong> 20 Liters</p>
+                    <p><strong>Location:</strong> Main Street Gas Station</p>
+                    <p><strong>Requested On:</strong> March 3, 2025 at 10:30 AM</p>
+                `;
+                
+                // Initialize map - this is a placeholder, replace with actual OlaMapsWebSDK implementation
+                const mapContainer = document.getElementById('map-container');
+                mapContainer.innerHTML = '<div class="d-flex justify-content-center align-items-center h-100 bg-light"><p class="text-muted">Map loading...</p></div>';
+                
+                // Display timeline
+                const timelineContainer = document.querySelector('.timeline');
+                timelineContainer.innerHTML = `
+                    <li class="active">
+                        <strong>Request Created</strong>
+                        <p>March 3, 2025 - 10:30 AM</p>
+                    </li>
+                    <li>
+                        <strong>Request Approved</strong>
+                        <p>Pending</p>
+                    </li>
+                    <li>
+                        <strong>Fuel Delivered</strong>
+                        <p>Pending</p>
+                    </li>
+                `;
+                
+                // Show/hide cancel button based on status
+                const cancelBtn = document.getElementById('cancel-request-btn');
+                cancelBtn.href = `{% url 'cancel_request' 0 %}`.replace('0', requestId);
+                cancelBtn.classList.remove('d-none');
+            });
+        });
+        
+        // Make entire row clickable to view details
+        tableRows.forEach(row => {
+            row.addEventListener('click', function(e) {
+                // Prevent clicking if user clicks on an action button
+                if (e.target.closest('.btn-group')) {
+                    return;
+                }
+                
+                // Find and click the view button in this row
+                const viewButton = this.querySelector('.view-details');
+                if (viewButton) {
+                    viewButton.click();
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

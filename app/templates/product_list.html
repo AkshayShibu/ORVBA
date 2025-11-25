@@ -1,0 +1,83 @@
+{% extends 'user_home.html' %}
+{% load static %}
+
+{% block user %}
+<div class="container mt-5 mb-5">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Categories</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <a href="{% url 'product_list' %}" class="text-decoration-none">All Products</a>
+                        </li>
+                        {% for category in categories %}
+                        <li class="list-group-item">
+                            <a href="{% url 'product_list' %}?category={{ category.id }}" class="text-decoration-none">
+                                {{ category.name }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                        <li class="list-group-item">
+                            <a href="{% url 'view_cart' %}" class="text-decoration-none">Cart</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card mb-4">
+                {% comment %} <div class="card-header bg-dark text-white">
+              <h5 class="mb-0">Categories</h5> 
+                </div> {% endcomment %}
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        
+                        <li class="list-group-item">
+                            <a href="{% url 'view_cart' %}" class="text-decoration-none">Cart</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="{% url 'order_history' %}" class="text-decoration-none">View Orders</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+        <div class="col-md-9">
+            <form method="GET" action="" align="right">
+                <input type="text" name="q" placeholder="Search products..." value="{{ request.GET.q }}">
+                <button type="submit">Search</button>
+              </form>
+            <h2 class="mb-4">Our Products</h2>
+            
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                {% for product in products %}
+                <div class="col">
+                    <div class="card h-100">
+                        <a href="{% url 'product_detail' product.id %}" >
+                        <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}"></a>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <p class="card-text text-truncate">{{ product.description }}</p>
+                            <p class="card-text text-primary fw-bold">₹{{ product.price }}</p>
+                        </div>
+                      
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        No products available in this category.
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

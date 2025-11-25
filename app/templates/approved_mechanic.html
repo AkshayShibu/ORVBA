@@ -1,0 +1,58 @@
+{% extends 'user_home.html' %}
+{% block user %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOM6S5y3mQKk6t2R0wE7t6k4Gx8QQoF5WzDcp5A" crossorigin="anonymous">
+
+<style>
+    body{
+        background: rgb(241, 239, 240);
+background: radial-gradient(circle, rgb(248, 247, 247) 0%, rgb(76, 76, 77) 100%);
+    }
+</style>
+    <div class="container mt-5">
+        <div class="text-center my-3 text-white" style="font-family: 'Times New Roman', Times, serif;">
+            <h1 style="margin-left:320px;"> MECHANICS<form method="get" action="{% url 'approved_mechanics' %}" style="float: right;">
+              <input type="text" name="search" value="{{ search_query }}" style="width:250px;height:40px;border-radius:0.5rem;font-size:18px;">
+              <button type="submit" style=" border-radius: 0.2rem; margin-left: 2px;background: rgb(241, 239, 240);background: radial-gradient(circle, rgb(248, 247, 247) 0%, rgb(76, 76, 77) 100%);">
+                <svg  xmlns="http://www.w3.org/2000/svg" height="35" width="35" style="padding:5px ;background-color:white;margin-bottom:8px;border-radius:0.2rem;margin-left:2px;" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="#050505" d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/></svg>
+              </button>
+          </form></h1>
+        </div>
+        <div class="row">
+            {% for mechanic in mechanics %}
+
+             <div class="col-sm-6 mb-3 mb-sm-0 g-3  ">
+             <a href="{% url 'mechistory' mechanic.id %}" style="text-decoration: none;">
+          <div class="col-lg-3">
+            <img src="{{ mechanic.profile_pic.url }}" class="card-img-top ml-1" style="margin-top: 20%;" alt="..." height="500px" width="120px">
+          </div>
+          <div class="col" >
+            <div class="card-body">
+              <h2 class="card-title" style="font-family: 'Courier New', Courier, monospace;font-weight: bold;">{{mechanic.name}}</h2>
+          
+            </div>
+          </a>
+            <ul class="list-group list-group-flush" style="border-radius: 0.75rem;">
+              <li class="list-group-item mr-2 jumbotron" >Location <span style="margin-left: 100px;" >:</span>&nbsp;&nbsp;{{mechanic.location}}</li>
+    
+              <li class="list-group-item mt-2 mr-2">Phone <span style="margin-left: 115px;">:</span>&nbsp;&nbsp;{{mechanic.phone}}</li>
+              <li class="list-group-item mt-2 mr-2">Skills <span style="margin-left: 125px;">:</span>&nbsp;&nbsp;{{mechanic.skills}}</li>
+              <li class="list-group-item mt-2 mr-2">Experience <span style="margin-left: 85px;">:</span>&nbsp;&nbsp;{{mechanic.experience}}</li>
+            </ul>
+             <div class="row mt-2 mr-1 ml-1 mb-2">
+                        <div class="col-4"></div>
+              <div class="col">  <form action="{%url 'create_req' mechanic.id %}"   >
+                {% csrf_token %}
+                <button  type="submit" class="btn btn-info text-white">Send Request</button>
+                
+            </form>
+                </div>
+             <div class="col-1"></div>
+            </div>
+            
+          </div>
+          </div>
+      
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
